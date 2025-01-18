@@ -1,214 +1,296 @@
-// function selectJar(jarNumber) {
-//     if (selectedBall !== null) {
-//         // Skip adding the ball if the jar is full
-//         if (jars[jarNumber].length >= maxBalls) {
-//             return;
-//         }
-
-//         // Add the selected ball to the jar
-//         jars[jarNumber].push(selectedBall);
-//         arrangeBalls(document.getElementById(`jar${jarNumber}`), jarNumber);
-//         console.log(`Ball ${selectedBall} stored in jar ${jarNumber}`);
-//         selectedBall = null; // Reset the selected ball
-//         return;
-//     }
-
-//     if (selectedJar === null) {
-//         // Select the source jar for moving balls
-//         if (jars[jarNumber].length === 0) {
-//             return; // Do nothing if the jar is empty
-//         }
-//         selectedJar = jarNumber;
-//         console.log(`Selected Jar: ${selectedJar}`);
-//         return;
-//     }
-
-//     if (selectedJar === jarNumber) {
-//         // Deselect the jar if the same jar is clicked again
-//         selectedJar = null;
-//         console.log(`Deselected Jar: ${jarNumber}`);
-//         return;
-//     }
-
-//     // Move the top ball from the selected jar to the target jar
-//     moveBallToJar(selectedJar, jarNumber);
-//     selectedJar = null; // Reset the selected jar
-// }
-
-// function moveBallToJar(fromJar, toJar) {
-//     // Skip moving the ball if the target jar is full
-//     if (jars[toJar].length >= maxBalls) {
-//         return;
-//     }
-
-//     const movingBall = jars[fromJar].pop(); // Remove the top ball from the source jar
-//     if (!movingBall) {
-//         return; // Do nothing if the source jar is empty
-//     }
-
-//     jars[toJar].push(movingBall); // Add the ball to the target jar
-
-//     // Rearrange the balls in both jars
-//     arrangeBalls(document.getElementById(`jar${fromJar}`), fromJar);
-//     arrangeBalls(document.getElementById(`jar${toJar}`), toJar);
-
-//     console.log(`Moved Ball ${movingBall} from Jar ${fromJar} to Jar ${toJar}`);
-// }
-
-const ballContainer = document.getElementById('ball-container')
-const ballColors = getRandomColors(15)
-
-let selectedJar = null
-let selectedBall = null
-
-const jars = { 1: [], 2:[], 3:[] }
-const maxBalls = 5
-
-for (let i=1; i<= 15; i++){
-    const ball = document.createElement("div")
-    ball.classList.add("ball")
-    ball.id = `balls${i}`
-    ball.textContent = i
-    ball.style.backgroundColor = ballColors[i - 1]
-
-    ball.onclick = () => selectBall(i)
-    ballContainer.appendChild(ball)
+const ballContainer = document.getElementById('ball-container');
+const ballColors = getRandomColors(15);
+let selectedJar = null;
+let selectedBall = null;
+const jars = { 1: [], 2: [], 3: [] };
+const maxBalls = 5;
+// Generate balls dynamically and append them to the bottom container
+for (let i = 1; i <= 15; i++) {
+    const ball = document.createElement("div");
+    ball.classList.add("ball");
+    ball.id = `balls${i}`;
+    ball.textContent = i;
+    ball.style.backgroundColor = ballColors[i - 1];
+    ball.onclick = () => selectBall(i);
+    ballContainer.appendChild(ball);
 }
-
-function getRandomColors(count){
-
-    const colors = []
-    for (let i=0; i<count; i++){
-        colors.push(randomColors())
+function getRandomColors(count) {
+    const colors = [];
+    for (let i = 0; i < count; i++) {
+        colors.push(randomColors());
     }
-
-    return colors
+    return colors;
 }
-
-function randomColors(){
-
-    const letters = "0123456789ABCDEF"
-    let color = "#"
-    for (let i=0; i<6; i++){
-        color += letters[Math.floor(Math.random() * 16)]
+function randomColors() {
+    const codes = "0123456789ABCDEF";
+    let color = "#";
+    for (let i = 0; i < 6; i++) {
+        color += codes[Math.floor(Math.random() * 16)];
     }
-
-    return color
+    return color;
 }
-
-// function selectBall(ballNumber){
-//     selectedBall = ballNumber
-// }
 function selectBall(ballNumber) {
-    // Check if the ball is already inside a jar
-    if (isBallInJar(ballNumber)) {
-        return;  // Don't select the ball if it's already in a jar
-    }
-
-    selectedBall = ballNumber;
-}
-
-function isBallInJar(ballNumber) {
-    // Check if the ball is present in any jar
-    return Object.values(jars).some(jar => jar.includes(ballNumber));
-}
-
-
-function selectJar(jarNumber){
-
-    // if(selectedBall === null){
-    //     alert("Please select a ball first")
-    //     return
-    // }
-    if (isBallInJar(selectedBall)) {
-        // Prevent the movement if the selected ball is already in the jar
+    if (ballInJar(ballNumber)) {
+        // Remove the ball from the jar and place it back
+        removeBall(ballNumber);
         return;
     }
-    
-
-    if(selectedBall !== null){
-        if (jars[jarNumber].length >= maxBalls){
-            return
-        }
-
-        jars[jarNumber].push(selectedBall)
-        arrangeBalls(document.getElementById(`jar${jarNumber}`), jarNumber)
-        console.log(`Ball ${selectedBall} stored in jar ${jarNumber}`)
-        selectedBall = null
-        return
-    }
-
-    if(selectedJar === null) {
-        if (jars[jarNumber].length === 0){
-            return
-        }
-        selectedJar = jarNumber
-        console.log(`Selected Jar: ${selectedJar}`)
-        return
-    }
-
-    if (selectedJar === jarNumber){
-        selectedJar = null
-        console.log(`Deselected Jar: ${jarNumber}`)
-        return
-
-    }
-
-    moveBall(selectedJar, jarNumber)
-    selectedJar = null
+    selectedBall = ballNumber;
 }
-
-
-function arrangeBalls(jarElement, jarNumber){
+function ballInJar(ballNumber) {
+    return Object.values(jars).some(jar => jar.includes(ballNumber));
+}
+function selectJar(jarNumber) {
+    if (ballInJar(selectedBall)) {
+        return;
+    }
+    if (selectedBall !== null) {
+        if (jars[jarNumber].length >= maxBalls) {
+            console.log(`Jar ${jarNumber} is full`);
+            return;
+        }
+        jars[jarNumber].push(selectedBall);
+        arrangeBalls(document.getElementById(`jar${jarNumber}`), jarNumber);
+        console.log(`Ball ${selectedBall} stored in Jar ${jarNumber}`);
+        selectedBall = null;
+        return;
+    }
+    if (selectedJar === null) {
+        if (jars[jarNumber].length === 0) {
+            return;
+        }
+        selectedJar = jarNumber;
+        console.log(`Selected Jar: ${selectedJar}`);
+        return;
+    }
+    moveBall(selectedJar, jarNumber);
+    selectedJar = null;
+}
+function arrangeBalls(jarElement, jarNumber) {
     jars[jarNumber].forEach((ballNumber, index) => {
-        const ballElement = document.getElementById(`balls${ballNumber}`)
-
-        // ballElement.classList.remove('arranged-ball')
-
-        jarElement.appendChild(ballElement)
-
-        // ballElement.classList.add('arranged-ball')
-
-        ballElement.style.margin = "0"
-        ballElement.style.position = "absolute"
-        ballElement.style.width = "40px"
-        ballElement.style.height = "40px"
-        ballElement.style.left = "50%"
-        ballElement.style.transform ="translateX(-50%)"
-        ballElement.style.bottom = `${index * 45}px`
-    })
+        const ballElement = document.getElementById(`balls${ballNumber}`);
+        jarElement.appendChild(ballElement);
+        ballElement.style.margin = "0";
+        ballElement.style.position = "absolute";
+        ballElement.style.height = "40px";
+        ballElement.style.width = "40px";
+        ballElement.style.left = "50%";
+        ballElement.style.transform = "translateX(-50%)";
+        ballElement.style.bottom = `${index * 45}px`;
+    });
 }
-// function arrangeBalls(jarElement, jarNumber) {
-//     jars[jarNumber].forEach((ballNumber, index) => {
-//         const ballElement = document.getElementById(`balls${ballNumber}`);
-//         ballElement.classList.remove('arranged-ball');
-
-//         jarElement.appendChild(ballElement);
-//         ballElement.classList.add('arranged-ball');
-
-//         // Calculate the translateY value based on index and ball height
-//         const translateY = index * 45; 
-//         // ballElement.style.transform = `translateY(${translateY}px)`;
-//     });
-// }
-function moveBall(fromJar, toJar){
-
-    if (jars[toJar].length >= maxBalls){
-        return
+function moveBall(fromJar, toJar) {
+    const move = jars[fromJar].pop();
+    if (!move) {
+        return;
     }
-
-    const move = jars[fromJar].pop()
-    if(!move){
-        return
+    if (jars[toJar].length >= maxBalls) {
+        console.log(`Jar ${toJar} is full`);
+        jars[fromJar].push(move); // Return ball to original jar
+        return;
     }
-
-    jars[toJar].push(move)
-
-    arrangeBalls(document.getElementById(`jar${fromJar}`), fromJar)
-    arrangeBalls(document.getElementById(`jar${toJar}`), toJar)
-
-    console.log(`Moved Ball ${move} from Jar ${fromJar} to Jar ${toJar}`)
+    jars[toJar].push(move);
+    arrangeBalls(document.getElementById(`jar${fromJar}`), fromJar);
+    arrangeBalls(document.getElementById(`jar${toJar}`), toJar);
+    console.log(`Moved Ball ${move} from Jar ${fromJar} to Jar ${toJar}`);
 }
-
-
+// Function to remove a ball from a jar and place it back in the bottom container
+function removeBall(ballNumber) {
+    // Find the jar that contains the ball
+    for (const jarNumber in jars) {
+        const jarIndex = jars[jarNumber].indexOf(ballNumber);
+        if (jarIndex !== -1) {
+            // Remove the ball from the jar
+            jars[jarNumber].splice(jarIndex, 1);
+            // Update the jar's ball arrangement
+            arrangeBalls(document.getElementById(`jar${jarNumber}`), jarNumber);
+            // Move the ball back to the bottom container in ascending order
+            const ballElement = document.getElementById(`balls${ballNumber}`);
+            ballElement.style.margin = "5px";
+            ballElement.style.position = "static";
+            ballElement.style.height = "50px";
+            ballElement.style.width = "50px";
+            ballElement.style.transform = "none";
+            // Add the ball back to the container in sorted order
+            appendBallInOrder(ballElement);
+            console.log(`Ball ${ballNumber} removed from Jar ${jarNumber}`);
+            break;
+        }
+    }
+}
+// Function to append a ball to the bottom container in ascending order
+function appendBallInOrder(ballElement) {
+    const ballNumber = parseInt(ballElement.textContent);
+    const balls = Array.from(ballContainer.children);
+    // Find the correct position to insert the ball
+    let inserted = false;
+    for (let i = 0; i < balls.length; i++) {
+        if (parseInt(balls[i].textContent) > ballNumber) {
+            ballContainer.insertBefore(ballElement, balls[i]);
+            inserted = true;
+            break;
+        }
+    }
+    // If the ball is the largest, append it to the end
+    if (!inserted) {
+        ballContainer.appendChild(ballElement);
+    }
+}
     
+
+
+
+
+
+// const ballContainer = document.getElementById('ball-container')
+// const ballColors = getRandomColors(15)
+
+// let selectedJar = null
+// let selectedBall = null
+
+// const jars = { 1:[], 2:[], 3:[] }
+// const maxBalls = 5
+
+// for (let i=1; i<=10; i++){
+//     const ball = document.createElement("div")
+//     ball.classList.add("ball")
+//     ball.id = `balls${i}`
+//     ball.textContent = i
+//     ball.style.backgroundColor = ballColors[i - 1]
+
+   
+//     ball.onclick = () => selectBall(i)
+//     ballContainer.appendChild(ball)
+// }
+
+// function getRandomColors(count){
+//     const colors = []
+//     for (let i=0; i<count; i++){
+//         colors.push(randomColors())
+//     }
+//     return colors
+// }
+
+// function randomColors(){
+
+//     const codes = "0123456789ABCDEF"
+//     let color = "#"
+//     for (let i=0; i<6; i++){
+//         color += codes[Math.floor(Math.random() * 16)]
+//     }
+
+//     return color
+// }
+
+// function selectBall(ballNumber){
+//     if(ballInJar(ballNumber)){
+//         return
+//     }
+
+//     selectedBall = ballNumber
+// }
+
+// function ballInJar(ballNumber){
+//     return Object.values(jars).some(jar => jar.includes(ballNumber))
+// }
+
+// function selectJar(jarNumber){
+
+//     if(ballInJar(selectedBall)){
+//         return
+//     }
+
+//     if(selectedBall !== null){
+
+
+//         jars[jarNumber].push(selectedBall)
+//         arrangeBalls(document.getElementById(`jar${jarNumber}`), jarNumber)
+
+//         console.log(`Ball ${selectedBall} stored in jar ${jarNumber}`)
+//         selectedBall = null
+//         return
+//     }
+
+//     if(selectedJar === null){
+//         if (jars[jarNumber].length === 0){
+//             return
+//         }
+//         selectedJar = jarNumber
+//         console.log(`Selected Jar: ${selectedJar}`)
+//         return
+//     }
+
+//     moveBall(selectedJar, jarNumber)
+//     selectedJar = null
+// }
+
+// function arrangeBalls(jarElement, jarNumber){
+//     jars[jarNumber].forEach((ballNumber, index) => {
+//         const ballElement = document.getElementById(`balls${ballNumber}`)
+
+//         jarElement.appendChild(ballElement)
+
+//         ballElement.style.margin = "0"
+//         ballElement.style.position = "absolute"
+//         ballElement.style.height = "40px"
+//         ballElement.style.width = "40px"
+//         ballElement.style.left = "50%"
+//         ballElement.style.transform = "translateX(-50%)"
+//         ballElement.style.bottom = `${index * 45}px`
+//     })
+// }
+
+
+// function moveBall(fromJar, toJar){
+
+//     const move = jars[fromJar].pop()
+//     if(!move){
+//         return
+//     }
+
+//     jars[toJar].push(move)
+
+//     arrangeBalls(document.getElementById(`jar${fromJar}`), fromJar)
+//     arrangeBalls(document.getElementById(`jar${toJar}`), toJar)
+
+//     console.log(`Moved Ball ${move} from Jar ${fromJar} to Jar ${toJar}`)
+// }
+
+function arrangeBalls(jarElement, jarNumber) {
+    const ballHeight = 45; // Height of each ball plus margin (adjust if needed)
+    const initialJarHeight = 232; // Initial jar height
+    const maxBalls = 5; // Balls before jar grows
+    
+    // Calculate the new height
+    const numBalls = jars[jarNumber].length;
+    const newHeight = Math.max(initialJarHeight, ballHeight * numBalls + 20); // Adding 20px for padding
+    
+    // Update the jar height
+    jarElement.style.height = `${newHeight}px`;
+    
+    // Arrange the balls inside the jar
+    jars[jarNumber].forEach((ballNumber, index) => {
+        const ballElement = document.getElementById(`balls${ballNumber}`);
+        jarElement.appendChild(ballElement);
+        ballElement.style.margin = "0";
+        ballElement.style.position = "absolute";
+        ballElement.style.height = "40px";
+        ballElement.style.width = "40px";
+        ballElement.style.left = "50%";
+        ballElement.style.transform = "translateX(-50%)";
+        ballElement.style.bottom = `${index * ballHeight}px`;
+    });
+}
+
+
+function moveBall(fromJar, toJar) {
+    const move = jars[fromJar].pop(); // Remove the top ball from the source jar
+    if (!move) {
+        return; // No ball to move
+    }
+
+    jars[toJar].push(move); // Add the ball to the destination jar
+    arrangeBalls(document.getElementById(`jar${fromJar}`), fromJar); // Rearrange source jar
+    arrangeBalls(document.getElementById(`jar${toJar}`), toJar);     // Rearrange destination jar
+    console.log(`Moved Ball ${move} from Jar ${fromJar} to Jar ${toJar}`);
+}
