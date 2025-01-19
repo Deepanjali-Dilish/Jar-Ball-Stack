@@ -7,8 +7,21 @@
     <title>Jar and Balls Game</title>
 </head>
 <body>
-    <h1>Jar Ball Stack</h1>
-    <div class="container">
+
+    <div class="background-container">
+        <h1>Jar Ball Stack</h1>
+        <button id="letsPlayBtn" class="btn">Let's Play</button>
+    </div>
+
+    <!-- Instruction Page (Initially Hidden) -->
+    <div id="instructionPage" class="instruction-container">
+        <h2>Instructions</h2>
+        <p>In this game, you have 3 jars and several colored balls. The goal is to stack balls into jars. You can move or remove balls from jars.</p>
+        <button id="startGameBtn" class="btn">Start Game</button>
+    </div>
+
+    <!-- Game Container (Initially Hidden) -->
+    <div class="container" style="display:none;">
         <div class="jar" id="jar1" onclick="selectJar(1)">
             <span class="jar-label">Jar 1</span>
         </div>
@@ -20,6 +33,19 @@
         </div>
     </div>
     <div class="balls" id="ball-container"></div>
+
+    <!-- Icon for showing instructions (Only in the container page) -->
+    <div class="icon-container" style="display:none;">
+        <button id="instructionIcon" class="icon-btn">❗</button>
+    </div>
+
+    <!-- Overlay Instruction Page -->
+    <div id="overlayInstructionPage" class="overlay-instruction-container">
+        <div class="overlay-instruction-content">
+            <!-- Content will be dynamically added here -->
+        </div>
+    </div>
+
     <script src="script.js"></script>
 </body>
 </html>
