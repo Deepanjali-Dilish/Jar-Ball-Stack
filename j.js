@@ -294,3 +294,4 @@ function moveBall(fromJar, toJar) {
     arrangeBalls(document.getElementById(`jar${toJar}`), toJar);     // Rearrange destination jar
     console.log(`Moved Ball ${move} from Jar ${fromJar} to Jar ${toJar}`);
 }
+
